@@ -1,0 +1,7 @@
+Django==1.10.3
+django-ipware==1.1.6
+django-password-reset==0.9
+geoip2==2.4.1
+maxminddb==1.2.2
+python-http-client==2.2.1
+requests==2.12.2

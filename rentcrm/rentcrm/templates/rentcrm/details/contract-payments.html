@@ -1,0 +1,101 @@
+{% extends '../base.html' %}
+{% load static %}{% load humanize %}
+
+{% block title %}{{ contract }}{% endblock %}
+
+{% block content %}
+
+	<div class="container">
+		<ol class="breadcrumb">
+			<li><a href="{% url 'contract_info' contract.apartment.id %}">{{ contract }}</a></li>
+			<li class="active">Payments search</li>
+		</ol>
+	</div>
+
+	<div class="container-fluid">
+	  <h1>Payments for {{ contract }}</h1>
+	  <div class="row">
+			{% with tenants=contract.tenants.all %}
+			{% with conditions=contract.current_conditions %}
+	    <div class="col-sm-3">
+				<h2>Search</h2>
+				<form method="get">
+					<label for="from">From:</label><br>
+					<input class="form-control datepicker" type="date" name="from" value="{{ request.GET.from }}">
+					<br>
+					<label for="to">To:</label><br>
+					<input class="form-control datepicker" type="date" name="to" value="{{ request.GET.to }}">
+					<br>
+					<input type="submit" value="Show payments">
+				</form>
+	    </div>
+
+	    <div class="col-sm-3">
+	    	<h2>Payments</h2>
+	    	<ul>
+	    		{% for payment in payments %}
+	    			<li><strong>{{ payment.date }}</strong>: ${{ payment.amount|intcomma }}</li>
+					{% empty %}
+						<p>No payments yet!</p>
+					{% endfor %}
+				</ul>
+	    </div>
+
+			<div class="col-sm-3">
+				<h2>Adjustments</h2>
+				<ul>
+	    		{% for adjustment in adjustments %}
+	    			<li>
+							<strong>{{ adjustment.date }}</strong>: {{ adjustment.amount|intcomma }}
+							<br>
+							<span>{{ adjustment.note }}</span>
+						</li>
+					{% empty %}
+						<p>No adjustments yet!</p>
+					{% endfor %}
+	    	</ul>
+			</div>
+
+			<div class="col-sm-3">
+				<h2>Lease detail</h2>
+				<p><strong>Legal Rent: </strong>${{ contract.apartment.rent_legal|intcomma }}</p>
+				<p><strong>Preferential Rent: </strong>${{ conditions.rent_preferential|intcomma }}</p>
+				<p><strong>Additional payments:<br>Garage :
+					</strong>
+					{% if conditions.is_garage_included %}
+						${{conditions.rent_for_garage}}
+					{% else %}
+						No
+					{% endif %}
+				</p>
+				<p><strong>Lease period start: </strong>{{ conditions.lease_start }}</p>
+				<p><strong>Lease period end: </strong>{{ conditions.lease_end }}</p>
+				<p><strong>Balance: </strong>{{ contract.balance|intcomma }}</p>
+				<p><strong>Security deposit: </strong>${{ contract.security_deposit|intcomma }}</p>
+
+	    	<h2>Tenant{{tenants|pluralize}}</h2>
+	    	{% for tenant in tenants %}
+	    		<h3>{{ tenant.name }}</h3>
+					<p><strong>Phone: </strong>{{ tenant.formatted_phone }}</p>
+					{% if tenant.email %}
+					<p><strong>Email: </strong>{{ tenant.email }}</p>
+					{% endif %}
+					{% if tenant.additional_contacts %}
+					<p><strong>Additional contacts: </strong></p>
+					<p>{{ tenant.additional_contacts }}</p>
+					{% endif %}
+					{% if tenant.notes %}
+					<p><strong>Notes: </strong></p>
+					<p>{{ tenant.notes }}</p>
+					{% endif %}
+					<a href="{% url 'edit_tenant' tenant.id %}?next={{ request.get_full_path|urlencode }}" title="Edit tenant"><span class="glyphicon glyphicon-pencil"></span></a>
+					<hr>
+	    	{% endfor %}
+	    </div>
+
+			{% endwith %}
+			{% endwith %}
+
+	  </div>
+	</div>
+{% endblock %}

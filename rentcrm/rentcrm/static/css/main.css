@@ -1,0 +1,15 @@
+body {
+  padding-top: 70px;
+}
+
+.rent_adj_input {
+	width: 200px;
+}
+
+.rent-adj-submit {
+	margin-top: 10px;
+}
+
+#apartments_table td>span {
+    white-space: nowrap;
+}

@@ -1,0 +1,23 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block title %}Lease end{% endblock %}
+
+{% block content %}
+{% if apartment.current_contract %}
+<h1>Are you sure?</h1>
+<p>This will end current lease and move {{ apartment }} to the Vacant list.</p>
+<form method="POST">
+	{% csrf_token %}
+	<div class="row">
+		<div class="col-md-6">
+			<input type="hidden" name="confirm" value="yes">
+			<button type="submit" class="btn btn-xl btn-danger" id="formsubmit">Yes, I'm sure</button>
+			<a class="btn btn-xl" href="{{ request.GET.prev }}">No, take me back</a>
+		</div>
+	</div>
+</form>
+{% else %}
+	<p>The apartments are not occupied currently</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Profile setup {% endblock %}
+
+{% block styles %}
+{% endblock %}
+{% block scripts %}
+{% endblock %}
+
+{% block navbar %}
+	<div class="profile-login">
+		{% if request.user.is_staff %}
+			<a href="/password-reset/recover/">Reset password</a>
+		{% endif %}
+	</div>
+{% endblock %}
+
+
+{% block content %}
+
+	<div class="jumbotron-container">
+	<h1>Personal details</h1>
+	<h4>Please provide some personal details to create profile</h4>
+
+	<form method="POST" class="jumbotron">
+		
+		{% csrf_token %}
+
+		{{ user_form.as_p }}
+
+		{{ personal_data_form.as_p }}
+
+		<input type="submit" value="Submit" id="submit-button">
+	</form>
+	</div>
+
+{% endblock %}

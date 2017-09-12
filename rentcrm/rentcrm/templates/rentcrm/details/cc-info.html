@@ -1,0 +1,142 @@
+{% extends '../base.html' %}
+{% load static %}{% load humanize %}
+
+{% block title %}{{ apartment }}{% endblock %}
+
+{% block content %}
+
+	<div class="container">
+	  <ol class="breadcrumb">
+	    <li><a href="/">All Buildings</a></li>
+	    <li><a href="{% url 'building_apartments' apartment.building.pk %}">{{ apartment.building }}</a></li>
+	    <li class="active">{{ apartment.apt_num }}</li>
+	  </ol>
+	</div>
+
+	<div class="container-fluid">
+	  <h1>Lease details for {{ apartment }} </h1>
+	  <div class="row">
+
+	  	{% if apartment.has_active_contract %}
+			{% with contract=apartment.current_contract %}
+			{% with tenants=contract.tenants.all %}
+			{% with conditions=contract.current_conditions %}
+	    <div class="col-sm-3">
+	    	<h2>Lease detail</h2>
+	    	<p><strong>Legal Rent: </strong>${{ apartment.rent_legal|intcomma }}</p>
+	    	<p><strong>Preferential Rent: </strong>${{ conditions.rent_preferential|intcomma }}</p>
+	    	<p><strong>Additional payments:<br>Garage :
+	    		</strong>
+	    		{% if conditions.is_garage_included %}
+	    			${{conditions.rent_for_garage}}
+	    		{% else %}
+	    			No
+	    		{% endif %}
+	    	</p>
+	    	<p><strong>Lease period start: </strong>{{ conditions.lease_start }}</p>
+	    	<p><strong>Lease period end: </strong>{{ conditions.lease_end }}</p>
+				<p><strong>Balance: </strong>{{ contract.balance|intcomma }}</p>
+				<p><strong>Security deposit: </strong>${{ contract.security_deposit|intcomma }}</p>
+
+				<h3>Apartment notes</h3>
+				<form action="{% url 'edit_apartment_note' apartment.id %}?next={{ request.get_full_path|urlencode }}" method="post">{% csrf_token %}
+						<textarea id="id_notes" class="form-control" name="notes" rows="3">{{ apartment.notes }}</textarea>
+						<button class="btn btn-success" type="submit" name="button">Save</button>
+
+				</form>
+
+	    </div>
+
+			<div class="col-sm-3">
+	    	<h2>Tenant{{tenants|pluralize}}</h2>
+	    	{% for tenant in tenants %}
+	    		<h3>{{ tenant.name }}</h3>
+					<p><strong>Phone: </strong>{{ tenant.formatted_phone }}</p>
+					{% if tenant.email %}
+					<p><strong>Email: </strong>{{ tenant.email }}</p>
+					{% endif %}
+					{% if tenant.additional_contacts %}
+					<p><strong>Additional contacts: </strong></p>
+					<p>{{ tenant.additional_contacts }}</p>
+					{% endif %}
+					{% if tenant.notes %}
+					<p><strong>Notes: </strong></p>
+					<p>{{ tenant.notes|linebreaks }}</p>
+					{% endif %}
+					<a href="{% url 'edit_tenant' tenant.id %}?next={{ request.get_full_path|urlencode }}" title="Edit tenant"><span class="glyphicon glyphicon-pencil"></span></a>
+					<hr>
+	    	{% endfor %}
+	    </div>
+
+	    <div class="col-sm-3">
+	    	<h2>Payments</h2>
+				{% with payments=contract.payment_set.all %}
+				{% if payments %}
+	    	<ul>
+	    		{% for payment in payments|slice:":5" %}
+	    			<li><strong>{{ payment.date }}</strong>: ${{ payment.amount|intcomma }}</li>
+	    		{% endfor %}
+					{% if payments|length > 5 %}
+						<a href="{% url 'contract_payments' contract.id %}">View all payments</a>
+					{% endif %}
+	    	</ul>
+				{% else %}
+					<p>No payments yet!</p>
+				{% endif %}
+				{% endwith %}
+				<h2>Adjustments</h2>
+				<ul>
+	    		{% for adjustment in contract.rentadjustment_set.all %}
+	    			<li>
+							<strong>{{ adjustment.date }}</strong>: {{ adjustment.amount|intcomma }}
+							<br>
+							<span>{{ adjustment.note }}</span>
+						</li>
+					{% empty %}
+						<p>No adjustments yet!</p>
+					{% endfor %}
+	    	</ul>
+	    </div>
+
+	    <div class="col-sm-3">
+	    	<h2>Actions</h2>
+	    	<p><a href="{% url 'add_payment' apartment.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-xs btn-success">Add Payment</a></p>
+	    	<p><a href="{% url 'rent_adjustment' apartment.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-xs btn-success">Rent Adjustment</a></p>
+
+				{% if contract.lease_end %}
+				<p>Moving out date is {{ contract.lease_end }}</p>
+				{% endif %}
+				<p><a href="{% url 'movingout' apartment.id %}?prev={{ request.get_full_path|urlencode }}" class="btn btn-xs btn-warning">Set Moving Out date</a></p>
+
+				<p><a href="{% url 'end_lease' apartment.id %}?prev={{ request.get_full_path|urlencode }}" class="btn btn-xs btn-danger">Moved Out</a></p>
+
+        {% if conditions.days_till_lease_end <= 100 %}
+        	{% if contract.is_lease_renewal_offer_sent %}
+        		<p>Lease renewal offer form was sent {{ conditions.leaserenewaloffer.date_issued }}</p>
+        		{% if not conditions.leaserenewaloffer.is_accepted %}
+							<p><a href="{% url 'update_lease' apartment.id %}" class="btn btn-xs btn-info">Update lease</a></p>
+						{% else %}
+							<p>Tenant chose {{ conditions.leaserenewaloffer.get_tenant_choice_display }}</p>
+						{% endif %}
+	        {% else %}
+						<p><a href="{% url 'send-renewal' apartment.id %}" class="btn btn-xs btn-info">Send renewal</a></p>
+					{% endif %}
+	      {% endif %}
+
+				<p><a href="{% url 'add_tenant' apartment.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-xs btn-primary">Add tenant</a></p>
+
+				<p><a href="{% url 'admin:rentcrm_contract_change' contract.id %}" class="btn btn-xs btn-default">Edit contract details</a></p>
+
+				{% endwith %}
+				{% endwith %}
+				{% endwith %}
+
+	    {% else %}
+    	<div class="container-fluid">
+		    <p>The apartments are not occupied currently</p>
+			</div>
+		{% endif %}
+	    </div>
+	  </div>
+	</div>
+{% endblock %}

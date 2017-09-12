@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+    	<title>{% block title %}{% endblock %}</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		<link rel='stylesheet' type='text/css' href="{% static 'css/proxima.css' %}">
+    	<link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <style>{% block styles %}{% endblock %}</style>
+	</head>
+	<body>
+		<nav class="navbar">
+			<a href="http://www.bullionreserve.com"><img src="{% static 'images/logo.jpg' %}" class="logo"></a>
+			{% block navbar %}
+			{% endblock %}
+		</nav>
+
+		<div class="uber-container">
+			<img src="{% static 'images/bull.jpg' %}" id="bull">
+
+			<img src="{% static 'images/bear.jpg' %}" id="bear">
+
+			<div class="content">
+				{% block content %}
+				{% endblock %}
+			</div>
+		</div>
+
+		<footer class="footer">
+			<div class="stuff-container">
+				<div class="address">
+					TOCQUEVILLE BULLION RESERVE, 40 WEST 57TH STREET, 19TH FLOOR, NEW YORK, NY 10019, USA
+				</div>
+				<div class="copyright">© 2016, TBR / Tera Management   |   Real Assets - Real Ownership </div>
+			</div>
+		</footer>
+
+		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<script>{% block scripts %}{% endblock %}</script>
+	</body>
+</html>

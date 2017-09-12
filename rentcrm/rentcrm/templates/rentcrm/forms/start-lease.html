@@ -1,0 +1,63 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block title %}{{ apartment }} new lease{% endblock %}
+
+{% block scripts %}
+$(function(){
+
+	$('#pref_rent_input').addClass('form-control');
+
+	$('#id_rent_for_garage').hide();
+	$('label[for="id_rent_for_garage"]').hide();
+	$('#pref_rent_div').hide();
+
+	$('#id_is_garage_included').prop('checked', false);
+
+	$('#id_is_garage_included').click(function(){
+		$('#id_rent_for_garage').val('0.00');
+		$('#id_rent_for_garage').toggle();
+		$('label[for="id_rent_for_garage"]').toggle();
+	});
+
+	$('#pref_rent_checkbox').click(function(){
+		$('#pref_rent_sum').val('');
+		$('#pref_rent_div').toggle();
+	});
+
+});
+{% endblock %}
+
+{% block content %}
+<h1>Apartment {{ apartment.apt_num }}, {{ apartment.building.address }} new lease</h1>
+
+{% if apartment.has_active_contract %}
+<p>The apartments are being leased already</p>
+{% else %}
+<form method="POST" style="width:50%">
+	{% csrf_token %}
+	<div class="row">
+		<div class="col-md-6">
+			<h2>Tenant</h2>
+			{{ tenantform.as_p }}
+		</div>
+		<div class="col-md-6">
+			<h2>Lease details</h2>
+			{{ conditionsform.as_p }}
+			{{ contractform.as_p }}
+			{{ legalrentform.as_p }}
+      <label for="pref_rent_checkbox">Apply preferential rent?</label>
+      <input type="checkbox" name="checkbox" id="pref_rent_checkbox" value="value">
+      <p id="pref_rent_div">
+          <label for="pref_rent_sum">Preferential rent:</label>
+      	<input type="number" name="pref_rent_sum" id="pref_rent_sum" placeholder='1234.00'>
+      </p>
+
+			<p><button type="submit" class="btn btn-xl btn-success">Start lease</button></p>
+
+		</div>
+	</div>
+</form>
+{% endif %}
+
+{% endblock %}

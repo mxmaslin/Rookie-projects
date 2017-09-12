@@ -1,0 +1,54 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block title %}Send renewal{% endblock %}
+
+{% block scripts %}
+
+	$('#rent_garage_div').hide();
+
+	$('#id_rent_for_garage').hide();
+	$('label[for="id_rent_for_garage"]').hide();
+	$('#offer_sent_message').delay(1000).fadeOut('fast');
+
+	$('#id_is_garage_included').click(function(){
+		$('#id_rent_for_garage').val('0.0');
+		$('#id_rent_for_garage').toggle();
+		$('label[for="id_rent_for_garage"]').toggle();
+	});
+
+	$('#submit_button').click(function(){
+		$('#offer_sent_message').show();
+		$('#offer_sent_message').delay(1000).fadeOut('fast');
+	});
+
+{% endblock %}
+{% block content %}
+	<h1>Lease Renewal Form for {{ apartment }}</h1>
+
+	<div class="row">
+		<div class="col-md-6">
+			<form method='POST' style="width:50%">
+				{% csrf_token %}
+				{{ offerform.as_p }}
+
+				<p><button type="submit" class="btn btn-xl btn-success" id="submit_button">Send</button><a href="/" class="btn btn-xl btn-warning" style="margin-left:1em">Cancel</a></p>
+
+				{% if offer_sent_already %}
+					<p id="offer_sent_message" style="color:#A65043"><strong>Renewal offer form was sent already</strong></p>
+				{% endif %}
+			</form>
+		</div>
+		<div class="col-md-6">
+			<h2>Current conditions</h2>
+			<strong>Rent legal</strong>: {{ apartment.rent_legal }}
+			<strong>Rent preferential</strong>: {{ apartment.current_contract.current_conditions.rent_preferential }}
+			<h3>Tenant{{ apartment.current_contract.tenants.all|pluralize }}</h3>
+			<ul>
+				{% for tenant in apartment.current_contract.tenants.all %}
+					<li>{{ tenant.name }}</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+{% endblock %}

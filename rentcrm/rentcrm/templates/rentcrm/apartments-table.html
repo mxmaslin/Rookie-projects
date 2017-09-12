@@ -1,0 +1,114 @@
+{% load humanize %}<table class="table table-hover table-responsive" id="apartments_table">
+  <thead>
+    <tr>
+      <th>Building</th>
+      <th>Apt</th>
+      <th>Lease Term</th>
+      <th>Tenant</th>
+      <th>Phone</th>
+      <th>Email</th>
+      <th>Rent Legal</th>
+      <th>Rent Preferential</th>
+      <th>Garage</th>
+      <th>Balance</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for apartment in apartments %}
+      {% with contract=apartment.current_contract %}
+      {% if contract %}
+      {% with balance=contract.balance %}
+      {% with tenants=contract.tenants.all %}
+      {% with current_conditions=contract.current_conditions %}
+      {% with days_till_lease_end=contract.days_till_lease_end %}
+      <tr class="{% if days_till_lease_end < 30 or days_till_lease_end <= 100 and not contract.is_lease_renewal_offer_sent %}
+                    danger
+                  {% elif days_till_lease_end < 30 %}
+                    danger
+                  {% elif balance < 0 %}
+                    warning
+                  {% comment %}
+                  {% elif days_till_lease_end <= 120 and not contract.is_lease_renewal_offer_accepted %}
+                    info
+                  {% else %}
+                    success
+                  {% endcomment %}
+                  {% endif %}">
+        <td>{{ apartment.building }}</td>
+        <td>{{ apartment.apt_num }}</td>
+        <td>
+            <a href="{% url 'contract_info' apartment.id %}">
+              {{ current_conditions.lease_start }}
+              <br />
+              {{ current_conditions.lease_end }}
+            </a>
+            {% if contract.lease_end %}
+            <br>
+            <a href="{% url 'movingout' apartment.id %}?prev={{ request.get_full_path|urlencode }}" class="label label-danger">Moving out: {{ contract.lease_end }}</a>
+            {% endif %}
+            {% if current_conditions.days_till_lease_end <= 120 %}
+              {% if contract.is_lease_renewal_offer_sent %}
+                {% if not current_conditions.leaserenewaloffer.is_accepted %}
+                <br /><a href="{% url 'update_lease' apartment.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-xs btn-info">Update lease</a>
+                {% endif %}
+              {% else %}
+                <br /><a href="{% url 'send-renewal' apartment.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-xs btn-info">Send renewal</a>
+              {% endif %}
+            {% endif %}
+        </td>
+
+        <td>{% for tenant in tenants %}
+              {{ tenant.name }} <br>
+            {% endfor %}
+        </td>
+
+        <td>{% for tenant in tenants %}
+              <span>{{ tenant.formatted_phone }}</span><br>
+            {% endfor %}
+        </td>
+
+        <td>{% for tenant in tenants %}
+              {{ tenant.email }} <br>
+            {% endfor %}
+        </td>
+
+        <td>${{ apartment.rent_legal|intcomma }}</td>
+
+        <td>${{ current_conditions.rent_preferential|intcomma }}</td>
+
+        <td>{% if current_conditions.is_garage_included %}
+          ${{ current_conditions.rent_for_garage|intcomma }}
+          {% else %}
+          No
+          {% endif %}
+        </td>
+
+        <td>
+          {{ balance|intcomma }}
+          <br /><a href="{% url 'add_payment' apartment.id %}?next={{ request.get_full_path|urlencode }}" class="btn btn-xs btn-success">Add Payment</a>
+        </td>
+      </tr>
+      {% endwith %}
+      {% endwith %}
+      {% endwith %}
+      {% endwith %}
+      {% else %}
+      <tr>
+        <td>{{ apartment.building }}</td>
+        <td>{{ apartment.apt_num }}</td>
+        <td>
+          <a href="{% url 'start_lease' apartment.id %}" class="btn btn-xs btn-primary">Start lease</a>
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>${{ apartment.rent_legal|intcomma }}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      {% endif %}
+      {% endwith %}
+    {% endfor %}
+  </tbody>
+</table>

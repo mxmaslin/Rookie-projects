@@ -1,0 +1,21 @@
+{% extends './base.html' %}
+{% block title %}Rent adjustment for {{ apartment }}{% endblock %}
+
+{% block content %}
+	<h1>Rent adjustment for apartment {{ apartment.apt_num }},
+	{{ apartment.building.address }}</h1>
+	{% if apartment.has_active_contract %}
+	<form method="POST" >
+		{% csrf_token %}
+		{{ form.as_p }}
+		<div class="rent-adj-submit">
+			<button type="submit" class="btn btn-xs btn-success">Submit adjustment</button>
+		</div>
+	</form>
+	<p>
+		Negative amount decrease tenant debt, positive - increase. Current balance is {{ apartment.current_contract.balance }}
+	</p>
+	{% else %}
+	<p>The apartments are not occupied currently</p>
+	{% endif %}
+{% endblock %}

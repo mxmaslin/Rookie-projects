@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
+		<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static '/css/main.css'  %}">
+    <style>{% block styles %}{% endblock %}</style>
+	</head>
+	<body>
+		<nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">Rent CRM</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+					{% include './base-nav.html' %}
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+
+
+		<div class="container">
+
+			{% block content %}
+
+				  {% include 'rentcrm/apartments-table.html' %}
+
+			{% endblock %}
+
+		</div>
+		<div id="stats" style="display: none;">
+		<!-- STATS: Total: %(total_time).2fs Python: %(python_time).2fs DB: %(db_time).2fs Queries: %(db_queries)d ENDSTATS -->
+		</div>
+		<script src="{% static 'js/jquery-1.12.4.js' %}"></script>
+		<script src="{% static 'js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'js/jquery-ui.js' %}"></script>
+		<link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
+		<script>
+		{% block scripts %}{% endblock %}
+		$(function(){
+			$('.datepicker').datepicker({
+				changeMonth: true,
+				changeYear: true,
+				yearRange: "2015:2040",
+				dateFormat: "yy-mm-dd"
+			});
+		});
+
+		</script>
+	</body>
+</html>

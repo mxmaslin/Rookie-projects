@@ -1,0 +1,17 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block title %} Apartments at {{ building.address }} {% endblock %}
+
+{% block content %}
+
+	<h1>Aparments at {{ building.address }}</h1>
+	<ul>
+		{% for apartment in building.apartment_set.all %}
+			<li>
+				<a href="{% url 'contract_info' apartment.pk %}">{{ apartment.apt_num }}</a>
+			</li>
+		{% endfor %}
+	</ul>
+
+{% endblock %}

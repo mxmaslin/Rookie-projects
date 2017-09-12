@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Login {% endblock %}
+
+{% block styles %}
+
+{% endblock %}
+{% block scripts %}
+	$(function(){
+		$('input[type=text]').addClass('form-control');
+		$('input[type=password]').addClass('form-control');
+	})
+
+{% endblock %}
+
+{% block content %}
+	
+	<div class="jumbotron-container">
+	<h1>Investor login</h1>
+	<form method="post" class="jumbotron" action="{% url 'login' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">
+        
+        {% csrf_token %}
+
+        <p>
+        	<label>Login:</label>
+        	<input type="text" name="username">
+        </p>
+
+        <p>
+        	<label>Password:</label>
+	         <input type="password" name="password">
+        </p>
+
+		{% if messages %}
+		    <ul class="messages">
+		    {% for message in messages %}
+		        <li{% if message.tags %} class="{{ message.error }}"{% endif %}>
+		            {{ message }}
+		        </li>
+		    {% endfor %}
+		    </ul>
+		{% endif %}
+
+        <input type="submit" value="Submit" id="submit-button">
+    </form>
+    </div>
+{% endblock %}

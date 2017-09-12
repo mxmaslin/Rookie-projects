@@ -1,0 +1,17 @@
+{% extends '../base.html' %}
+{% block title %}Payment for {{ apartment }}{% endblock %}
+
+{% block content %}
+	<h1>Set moving out date for apartment {{ apartment.apt_num }},
+	{{ apartment.building.address }}</h1>
+	{% if apartment.current_contract %}
+	<form method="POST" >
+		{% csrf_token %}
+		{{ form.as_p }}
+		<button type="submit" class="btn btn-xl btn-warning" id="formsubmit">Set moving out date</button>
+		<a class="btn btn-xl" href="{{ request.GET.prev }}">No, take me back</a>
+	</form>
+	{% else %}
+	<p>The apartments are not occupied currently</p>
+	{% endif %}
+{% endblock %}

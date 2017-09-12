@@ -1,0 +1,24 @@
+{% extends './base.html' %}
+{% block title %}Payment for {{ apartment }}{% endblock %}
+
+{% block content %}
+	<h1>Payment for apartment {{ apartment.apt_num }},
+	{{ apartment.building.address }}</h1>
+	{% if apartment.has_active_contract %}
+	<form method="POST" >
+		{% csrf_token %}
+		<section>
+			{{ form.as_p }}
+		</section>
+		<hr>
+		<section>
+			<h2>Rent Adjustment</h2>
+			{{ adjustment_form.as_p }}
+		</section>
+
+		<button type="submit" class="btn btn-success">Submit</button>
+	</form>
+	{% else %}
+	<p>The apartments are not occupied currently</p>
+	{% endif %}
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends './base.html' %}
+{% load static %}
+{% block title %}Enter tenant choice for {{ apartment }}{% endblock %}
+{% block scripts %}
+$(function(){
+
+	$('#id_rent_for_garage').hide();
+	$('label[for="id_rent_for_garage"]').hide();
+	$('#rent_sum').hide();
+	$('#accepted_inputs').hide();
+	$('#updated_already_message').delay(1000).fadeOut('fast');
+
+	$('#id_is_garage_included').click(function(){
+		$('#id_rent_for_garage').val('');
+		$('#id_rent_for_garage').toggle();
+		$('label[for="id_rent_for_garage"]').toggle();
+	});
+
+	$('#id_new_term').change(function(){
+     	$('#rent_sum').show();
+		$('.appended').remove();
+		if ($('option:selected', this).attr('value') == 1){
+			$('#rent_sum').append('<span class="appended">{{ sent_offer.rent_preferential_one_year }}</span>');
+		} else {
+			if ($('option:selected', this).attr('value') == 2){
+				$('#rent_sum').append('<span class="appended">{{ sent_offer.rent_preferential_two_years }}</span>');
+			} else {
+				if ($('option:selected', this).attr('value') == ''){
+					$('#rent_sum').hide();
+				}
+			}
+		}
+	});
+
+	$('#submit_button').click(function(){
+		$('#updated_already_message').show();
+		$('#updated_already_message').delay(1000).fadeOut('fast');
+	});
+
+	$('#id_is_accepted').change(function(){
+		if ($('option:selected', this).attr('value') == "True"){
+			$('#accepted_inputs').show();
+		} else {
+			$('#accepted_inputs').hide();
+		};
+		if ('{{ updated_already }}'){
+			$('#updated_already_message').show();
+			$('#updated_already_message').delay(1000).fadeOut('fast');
+		}
+	});
+});
+{% endblock %}
+
+{% block content %}
+
+	<h1>Update lease for {{ apartment }}</h1>
+	<form method="POST" style="width:50%">
+
+		{% csrf_token %}
+
+		{{ acceptform.as_p }}
+
+		{% if not updated_already %}
+			<div id="accepted_inputs">
+				{{ termform.as_p }}
+
+				<p id="rent_sum"><strong>Monthly rent on this term: </strong></p>
+
+				{{ garageform.as_p }}
+			</div>
+		{% endif %}
+
+        <p><button type="submit" class="btn btn-xl btn-success" id="submit_button">Update</button><a href="/" class="btn btn-xl btn-warning" style="margin-left:1em">Cancel</a></p>
+
+
+        {% if updated_already %}
+			<p id="updated_already_message" style="color:#A65043"><strong>Contract conditions were updated already</strong></p>
+
+		{% endif %}
+
+	</form>
+
+{% endblock %}

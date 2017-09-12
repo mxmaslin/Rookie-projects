@@ -1,0 +1,27 @@
+
+
+	<div class="profile-login">
+		<a href="{% url 'profile' %}">Profile</a>
+		{% if registered %}
+			<a href="{% url 'materials' %}">Materials</a>
+		{% endif %}
+		<a data-toggle="modal" data-target="#myModal">Logout</a>
+	</div>	
+
+
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" role="dialog">
+		<div class="modal-dialog modal-sm">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-body">
+					<p class="modal-text">Do you want to logout from secured connection?</p>
+				</div>
+				<div class="modal-footer">
+					<a class="modal-button" href="{% url 'logout' %}">Logout</a>
+					<a href='#' class="modal-button" data-dismiss="modal">Cancel</a>
+				</div>
+			</div>
+		</div>
+	</div>

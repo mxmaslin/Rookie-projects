@@ -1,0 +1,16 @@
+<ul class="nav navbar-nav">
+  <li{% block menu-all-active %}{% endblock %}><a href="{% url 'apartments_all' %}">All</a></li>
+  <li{% block menu-free-active %}{% endblock %}><a href="{% url 'apartments_free' %}">Vacant</a></li>
+  <li{% block menu-movingout-active %}{% endblock %}><a href="{% url 'apartments_moving_out' %}">Moving Out</a></li>
+  <li{% block menu-debtors-active %}{% endblock %}><a href="{% url 'apartments_debt' %}">Rent Due</a></li>
+  <li{% block menu-renewtime-active %}{% endblock %}><a href="{% url 'apartments_renew' %}">Renewal Due</a></li>
+  <li{% block menu-renewsendpastdue-active %}{% endblock %}><a href="{% url 'renewal_send_pastdue' %}">Renewal Send Past Due</a></li>
+  <li{% block menu-renewsent-active %}{% endblock %}><a href="{% url 'apartments_update' %}">Renewal Sent</a></li>
+  <li{% block menu-renewpastdue-active %}{% endblock %}><a href="{% url 'renewal_pastdue' %}">Renewal Past Due</a></li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+    <li><a href="{% url 'admin:index' %}">Admin</a></li>
+    {% if user.is_authenticated %}
+    <li><a href="{% url 'admin:logout' %}?next={{ request.get_full_path|urlencode }}">Log Out</a></li>
+    {% endif %}
+  </ul>

@@ -1,0 +1,66 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block title %}{{ apartment }} new lease{% endblock %}
+
+{% block scripts %}
+$(function(){
+	$( "#formsubmit" ).click(function() {
+		$( "form" ).submit(function(evt){
+
+
+			name = $( '#id_name' ).val();
+			phone = $( '#id_phone' ).val();
+
+			if((name === '') && (phone === '')){
+				alert("You must enter tenant's name and phone at least");
+				evt.preventDefault();
+			} else {
+			    $( '#myModal' ).modal('show');
+			}
+
+
+
+		});
+	});
+});
+{% endblock %}
+
+{% block content %}
+<h1>Additional tenant for apartment {{ apartment.apt_num }}, {{ apartment.building.address }}</h1>
+
+{% if apartment.has_active_contract %}
+<form method="POST" style="width:50%">
+	{% csrf_token %}
+	<div class="row">
+		<div class="col-md-6">
+			<h2>Tenant details</h2>
+			{{ tenantform.as_p }}
+			<p><button type="submit" class="btn btn-xl btn-success" data-toggle="modal" data-target="#myModal" id="formsubmit">Add tenant</button></p>
+		</div>
+	</div>
+</form>
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+	<div class="modal-dialog modal-sm">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Tenant was successfully added</h4>
+			</div>
+			<div class="modal-body">
+				<p>Add another?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Yes</button>
+				<a href="{% url 'apartments_all' %}" class="btn btn-primary">No</a>
+			</div>
+		</div>
+	</div>
+</div>
+{% else %}
+<p>The apartments are not occupied currently</p>
+{% endif %}
+{% endblock %}

@@ -19,7 +19,6 @@ from .forms import *
 @login_required
 def index(request):
     apartments = Apartment.objects.all().select_related('building')
-    print('Apartments: ', len(apartments))
     return render(request, 'rentcrm/index.html', {'apartments': apartments})
 
 
@@ -54,17 +53,12 @@ def debitors(request):
 
 @login_required
 def renewal_required(request):
-    # return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
-    # Question.objects.filter(pub_date__lte=timezone.now())
     now = timezone.now()
     renew_term_apartments = Apartment.objects.filter(
             contract__is_active=True,
             contract__contractcondition__lease_end__lt=now + timedelta(days=120),
             contract__contractcondition__leaserenewaloffer=None
-        ).exclude(
-            contract__contractcondition__lease_end__gte=now + timedelta(days=120)
         )
-    print('Apartments: ', len(renew_term_apartments))
     return render(request, 'rentcrm/renewal-required.html', {'apartments': renew_term_apartments})
 
 
@@ -77,8 +71,6 @@ def renewal_sent(request):
     ).exclude(
         contract__contractcondition__leaserenewaloffer=None
     )
-    print('Apartments (renewal sent): ', len(apartments))
-    print(timezone.now() + timedelta(days=120))
     return render(request, 'rentcrm/renewal-sent.html', {'apartments': apartments})
 
 
@@ -91,7 +83,6 @@ def renewal_send_pastdue(request):
     ).exclude(
         contract__contractcondition__leaserenewaloffer__tenant_choice=0
     )
-    print('Apartments: ', len(apartments))
     return render(request, 'rentcrm/renewal-send-pastdue.html', {'apartments': apartments})
 
 
@@ -163,7 +154,6 @@ def pay_in(request, apt_pk):
         form = PaymentForm(request.POST, prefix='payment')
         adjustment_form = RentAdjustmentForm(request.POST, prefix='adjust')
         if form.is_valid() and adjustment_form.is_valid():
-            print('Forms are OK!')
             next_page = request.GET.get('next',reverse('apartments_all'))
             payment = form.save(commit=False)
             payment.contract = apartment.current_contract
@@ -377,7 +367,6 @@ def send_renewal(request, apt_pk):
         if offerform.is_valid():
             offer = offerform.save(commit=False)
             offer.lease_period = lease_period
-            # offer.rent_for_garage = request.POST['rent_for_garage']
             offer.save()
             return HttpResponseRedirect(next_page)
     else:
@@ -402,8 +391,6 @@ def update_lease(request, apt_pk):
 
     if request.method == 'POST':
         acceptform = OfferAcceptanceForm(request.POST, instance=sent_offer)
-        # termform = TermForm(request.POST)
-        # garageform = GarageForm(request.POST)
         if acceptform.is_valid():
             sent_offer = acceptform.save()
             if sent_offer.tenant_choice == 1:
@@ -434,33 +421,8 @@ def update_lease(request, apt_pk):
                 apartment.save(update_fields=['rent_legal'])
 
             return HttpResponseRedirect(next_page)
-            # sent_offer.is_accepted = is_offer_accepted
-            # if is_offer_accepted:
-            #     if termform.is_valid() and termform.cleaned_data['new_term'] != '':
-            #         term = termform.save(commit=False)
-            #         garage = garageform.save(commit=False)
-            #         new_term = term.new_term
-            #         if new_term == 1:
-            #             new_rent_preferential = sent_offer.rent_preferential_one_year
-            #         elif new_term == 2:
-            #             new_rent_preferential = sent_offer.rent_preferential_two_years
-            #
-            #         new_garage_included = garage.is_garage_included
-            #         new_rent_for_garage = garage.rent_for_garage
-            #         new_conditions = ContractCondition(lease_start=current_conditions.lease_end + timedelta(
-            #             days=1), lease_end=current_conditions.lease_end + timedelta(days=366), is_active=False, rent_preferential=new_rent_preferential, is_garage_included=new_garage_included, rent_for_garage=new_rent_for_garage, contract=current_contract)
-            #         new_conditions.save()
-            #     else:
-            #         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-            # sent_offer.is_response_received = True
-            # sent_offer.save()
-            # return HttpResponseRedirect(reverse('apartments_all'))
-        # else:
-        #     acceptform = OfferAcceptanceForm(instance=sent_offer)
     else:
         acceptform = OfferAcceptanceForm(instance=sent_offer)
-        # termform = TermForm()
-        # garageform = GarageForm()
 
     return render(request, 'rentcrm/update-lease.html',
                   {'apartment': apartment, 'acceptform': acceptform})

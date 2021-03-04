@@ -4,6 +4,7 @@ from cerberus import Validator
 from flask import Flask
 from flask import request
 
+
 app = Flask(__name__)
 schema = {
     ';)': {'type': 'string', 'required': True},

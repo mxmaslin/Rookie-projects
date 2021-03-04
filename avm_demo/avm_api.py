@@ -22,7 +22,6 @@ def index():
         'housenumber': request.json['huisnummer'],
         'houseaddition': request.json.get('huisnummer_toevoeging', '')
     }
-
     url = 'https://mopsus.altum.ai/api/v1/altum/avm'
     response = requests.post(url, json=payload)
     return response.json()

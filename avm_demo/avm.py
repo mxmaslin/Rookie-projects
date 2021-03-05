@@ -25,6 +25,7 @@ def index():
     }
     url = 'https://mopsus.altum.ai/api/v1/altum/avm'
     response = requests.post(url, json=payload)
+    print('yay')
     return response.json()
 
 

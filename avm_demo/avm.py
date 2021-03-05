@@ -6,6 +6,7 @@ from flask import request
 
 
 app = Flask(__name__)
+
 schema = {
     'postcode': {'type': 'string', 'required': True},
     'huisnummer': {'type': 'string', 'required': True},

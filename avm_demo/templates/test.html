@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test AVM API</title>
+</head>
+<body>
+
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+
+    <form action="" method="post">
+      <p>
+        <label for="postcode">postcode (<b>required</b>)</label>
+        <input type="text" name="postcode" value="{{ postcode }}">
+	    </p>
+	    <p>
+	      <label for="huisnummer">huisnummer (<b>required</b>)</label>
+	      <input type="text" name="huisnummer" value="{{ huisnummer }}">
+    	</p>
+	    <p>
+	      <label for="huisnummer">huisnummer_toevoeging</label>
+	      <input type="text" name="huisnummer_toevoeging" value="{{ huisnummer_toevoeging }}">
+    	</p>
+	    <p>
+	      <input type="submit">
+	    </p>
+    </form>
+
+    {% if response_json %}
+      <p>{{ response_json }}</p>
+    {% endif %}
+
+</body>
+</html>
